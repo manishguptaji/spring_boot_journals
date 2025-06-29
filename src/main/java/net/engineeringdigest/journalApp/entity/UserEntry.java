@@ -1,9 +1,8 @@
 package net.engineeringdigest.journalApp.entity;
 
 import lombok.*;
-import org.springframework.stereotype.Indexed;
-
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,4 +24,6 @@ public class UserEntry {
     private String userName;
     @Column(nullable = false)
     private String password;
+    @Column(nullable = false)
+    private List<String> roles;
 }
