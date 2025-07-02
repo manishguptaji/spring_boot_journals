@@ -3,6 +3,8 @@ package net.engineeringdigest.journalApp.service;
 import net.engineeringdigest.journalApp.entity.UserEntry;
 import net.engineeringdigest.journalApp.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -14,7 +16,12 @@ public class UserService {
     @Autowired
     private UserRepo userRepo;
 
+    @Autowired
+    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     public void createNewUser(UserEntry user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRoles("ROLE_USER"); // Default role for new users
         userRepo.save(user);
     }
 

@@ -6,8 +6,11 @@ import net.engineeringdigest.journalApp.entity.UserEntry;
 import net.engineeringdigest.journalApp.service.JournalEntryService;
 import net.engineeringdigest.journalApp.service.UserService;
 import net.engineeringdigest.journalApp.util.ApiResponse;
+import net.engineeringdigest.journalApp.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -19,11 +22,6 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
-    @PostMapping
-    public void createJournalEntry(@RequestBody UserEntry user) {
-        userService.createNewUser(user);
-    }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<UserEntry>>> getAllUsers() {
@@ -41,7 +39,15 @@ public class UserController {
     }
 
     @GetMapping("/getUserByUserName")
-    public ResponseEntity<ApiResponse<UserEntry>> getUserByUserName(@RequestParam String userName) {
+    public ResponseEntity<ApiResponse<UserEntry>> getUserByUserName() {
+        String userName = SecurityUtils.getCurrentUsername();
+
+        if (userName == null || userName.isEmpty()) {
+            return ResponseEntity.ok(
+                    new ApiResponse<>(false, "User name is empty", null)
+            );
+        }
+
         UserEntry user = userService.getUserByUserName(userName);
 
         if (user == null) {

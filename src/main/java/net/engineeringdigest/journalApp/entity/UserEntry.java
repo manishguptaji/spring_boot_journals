@@ -25,5 +25,5 @@ public class UserEntry {
     @Column(nullable = false)
     private String password;
     @Column(nullable = false)
-    private List<String> roles;
+    private String roles;
 }
