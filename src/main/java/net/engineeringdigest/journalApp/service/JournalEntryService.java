@@ -13,10 +13,11 @@ public class JournalEntryService {
     @Autowired
     private JournalEntryRepo journalEntryRepository;
 
-    public void saveJournalEntry(JournalEntry journalEntry) {
+    public JournalEntry saveJournalEntry(JournalEntry journalEntry) {
         // Logic to save the journal entry
         // This is a placeholder for the actual implementation
         journalEntryRepository.save(journalEntry);
+        return journalEntry;
     }
 
     public List<JournalEntry> getAllJournalEntries() {

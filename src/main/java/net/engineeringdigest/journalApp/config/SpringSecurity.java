@@ -22,8 +22,9 @@ public class SpringSecurity extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/journal/**", "/user/**").authenticated() // Allow public access to certain endpoints
-                .anyRequest().permitAll() // Require authentication for all other requests
+                .antMatchers("/journal/**", "/user/**").authenticated()
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .anyRequest().permitAll()
             .and()
             .httpBasic(); // Use basic authentication
 
