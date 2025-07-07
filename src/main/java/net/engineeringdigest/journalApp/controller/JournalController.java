@@ -7,7 +7,6 @@ import net.engineeringdigest.journalApp.service.JournalEntryService;
 import net.engineeringdigest.journalApp.service.UserService;
 import net.engineeringdigest.journalApp.util.ApiResponse;
 import net.engineeringdigest.journalApp.util.SecurityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +17,15 @@ import java.util.List;
 @RequestMapping("/journal")
 public class JournalController {
 
-    @Autowired
-    private JournalEntryService journalEntryService;
-    @Autowired
-    private UserService userService;
+
+    private final JournalEntryService journalEntryService;
+
+    private final UserService userService;
+
+    public JournalController(JournalEntryService journalEntryService, UserService userService) {
+        this.journalEntryService = journalEntryService;
+        this.userService = userService;
+    }
 
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<JournalEntry>> createJournalEntry(@RequestBody JournalEntry je) {

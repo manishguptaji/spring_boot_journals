@@ -2,7 +2,6 @@ package net.engineeringdigest.journalApp.entity;
 
 import lombok.*;
 import javax.persistence.*;
-import java.util.List;
 
 @Getter
 @Setter
