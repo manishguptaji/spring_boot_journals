@@ -2,6 +2,7 @@ package net.engineeringdigest.journalApp.service;
 
 import lombok.extern.slf4j.Slf4j;
 import net.engineeringdigest.journalApp.entity.UserEntry;
+import net.engineeringdigest.journalApp.repos.UseRepoCustomImpl;
 import net.engineeringdigest.journalApp.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -20,16 +21,19 @@ public class UserService {
     private String BASE_URL_GITHUB;
 
     private final UserRepo userRepo;
+    private final UseRepoCustomImpl userRepo2;
     private final RestTemplate restTemplate;
 
     private final PasswordEncoder passwordEncoder;
 
     public UserService(UserRepo userRepo,
                        PasswordEncoder passwordEncoder,
-                       RestTemplate restTemplate) {
+                       RestTemplate restTemplate,
+                       UseRepoCustomImpl userRepo2) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.restTemplate = restTemplate;
+        this.userRepo2 = userRepo2;
     }
 
     public void createNewUser(UserEntry user) {
@@ -46,6 +50,10 @@ public class UserService {
 
     public UserEntry getUserByUserName(String userName) {
         return userRepo.findByUserName(userName);
+    }
+
+    public UserEntry getRoleByUserName(String userName) {
+        return userRepo2.getUserDataUsingCriteria(userName);
     }
 
     public Object getGitHubUsers() {

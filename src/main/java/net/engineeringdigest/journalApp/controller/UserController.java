@@ -65,4 +65,28 @@ public class UserController {
         );
     }
 
+    @GetMapping("/getRoleByUserName")
+    public ResponseEntity<ApiResponse<String>> getRoleByUserName() {
+        String userName = SecurityUtils.getCurrentUsername();
+
+        if (userName == null || userName.isEmpty()) {
+            return ResponseEntity.ok(
+                    new ApiResponse<>(false, "User name is empty", null)
+            );
+        }
+
+        UserEntry user = userService.getRoleByUserName(userName);
+
+        if (user == null) {
+            return ResponseEntity.ok(
+                    new ApiResponse<>(false, "User not found", null)
+            );
+        }
+
+        String role = user.getRoles();
+        return ResponseEntity.ok(
+                new ApiResponse<>(false, "Role fetched successfully", role)
+        );
+    }
+
 }
