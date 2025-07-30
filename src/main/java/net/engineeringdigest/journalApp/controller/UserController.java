@@ -29,6 +29,14 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<UserEntry>>> getAllUsers() {
+        String userName = SecurityUtils.getCurrentUsername();
+
+        if (userName == null || userName.isEmpty()) {
+            return ResponseEntity.ok(
+                    new ApiResponse<>(false, "User name is empty", null)
+            );
+        }
+
         List<UserEntry> users = userService.getAllUsers();
 
         if (users.isEmpty()) {
