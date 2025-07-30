@@ -6,14 +6,34 @@ import net.engineeringdigest.journalApp.model.UserModel;
 import net.engineeringdigest.journalApp.service.RedisService;
 import net.engineeringdigest.journalApp.service.UserService;
 import net.engineeringdigest.journalApp.util.ApiResponse;
+import net.engineeringdigest.journalApp.util.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/public")
 @Slf4j
 public class PublicController {
+
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
 
     private final UserService userService;
@@ -75,4 +95,36 @@ public class PublicController {
         redisTemplate.opsForValue().set(key, value);
         return "Value set successfully";
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody UserModel user) {
+        if (user.getUserName() == null || user.getPassword() == null) {
+            return ResponseEntity.badRequest().body("Username or password missing");
+        }
+
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPassword())
+            );
+
+            UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUserName());
+            String jwt = jwtUtil.generateToken(userDetails.getUsername());
+
+            log.info("User {} authenticated successfully", user.getUserName());
+
+            Map<String, String> response = new HashMap<>();
+            response.put("token", jwt);
+            response.put("type", "Bearer");
+            response.put("username", userDetails.getUsername());
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("Authentication failed for user: {}", user.getUserName(), e);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Authentication failed: " + e.getMessage());
+        }
+    }
+
+
 }
